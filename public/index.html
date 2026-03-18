@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Execution Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="main-container">
+        <header>
+            <div class="header-top">
+                <h1>Execution Dashboard</h1>
+                <div id="pomodoro-timer" onclick="startTimer()" title="Click to start 25m Deep Work">25:00</div>
+            </div>
+            <p>Discipline over motivation.</p>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            
+            <div class="stats-row">
+                <span id="streak-counter">🔥 Tasks Crushed Today: 0</span>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="left-controls">
+                <button id="view-toggle" class="outline-btn">📊 Kanban View</button>
+                <a href="/api/export" id="export-btn" class="outline-btn">💾 Backup Data</a>
+            </div>
+            <button id="focus-toggle" class="outline-btn">👁️ Enter Focus Mode</button>
+        </div>
+
+        <form id="todo-form">
+            <input type="text" id="todo-input" placeholder="What needs to be dominated today?" required autocomplete="off">
+            <select id="todo-tag">
+                <option value="Exam Prep">Exam Prep</option>
+                <option value="Startup">Startup</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Life" selected>Life</option>
+            </select>
+            <select id="todo-priority">
+                <option value="High">High</option>
+                <option value="Medium" selected>Med</option>
+                <option value="Low">Low</option>
+            </select>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <ul id="todo-list"></ul>
+
+        <div id="kanban-board" class="kanban-hidden">
+            <div class="kanban-column drop-zone" id="col-high" data-priority="High">
+                <h3>🔥 High Priority</h3>
+                <ul class="kanban-list"></ul>
+            </div>
+            <div class="kanban-column drop-zone" id="col-medium" data-priority="Medium">
+                <h3>⚡ Medium Priority</h3>
+                <ul class="kanban-list"></ul>
+            </div>
+            <div class="kanban-column drop-zone" id="col-low" data-priority="Low">
+                <h3>🧊 Low Priority</h3>
+                <ul class="kanban-list"></ul>
+            </div>
+        </div>
+
+        <div class="shortcuts-hint">
+            Shortcuts: <b>Alt+N</b> (New Task) | <b>Alt+F</b> (Focus Mode) | <b>Alt+K</b> (Toggle Kanban)
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1710788123001,
+    "text": "Master Machine Learning modules for exams",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Exam Prep",
+    "notes": "Target: 97%. Focus on neural network architectures today."
+  },
+  {
+    "id": 1710788123002,
+    "text": "Optimize Cloudflare Workers API",
+    "completed": false,
+    "priority": "High",
+    "tag": "Startup",
+    "notes": "Ensure local radius search for real-time inventory discovery is under 200ms."
+  },
+  {
+    "id": 1710788123003,
+    "text": "Strength training & Nutrition planning",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Fitness",
+    "notes": "Current goal: hit 52kgs. Meal prep for the week."
+  },
+  {
+    "id": 1710788123004,
+    "text": "car driving practice route",
+    "completed": false,
+    "priority": "High",
+    "tag": "Life",
+    "notes": "Route: College to House."
+  }
+]
