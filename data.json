@@ -2,11 +2,11 @@
   {
     "id": 1710788123001,
     "text": "Master Machine Learning modules for exams",
-    "completed": true,
+    "completed": false,
     "priority": "Medium",
     "tag": "Exam Prep",
     "notes": "Target: 97%. Focus on neural network architectures today.",
-    "completedAt": "2026-03-18T14:07:05.214Z"
+    "completedAt": null
   },
   {
     "id": 1710788123002,
@@ -34,77 +34,5 @@
     "tag": "Life",
     "notes": "Route: College to House.",
     "completedAt": "2026-03-18T14:07:01.869Z"
-  },
-  {
-    "id": 1773845843825,
-    "text": "reading",
-    "completed": false,
-    "priority": "Low",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773845843828,
-    "text": "reading",
-    "completed": false,
-    "priority": "Low",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773845845296,
-    "text": "reading",
-    "completed": false,
-    "priority": "High",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773845868017,
-    "text": "reading",
-    "completed": false,
-    "priority": "Medium",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773846036087,
-    "text": "reading",
-    "completed": false,
-    "priority": "Medium",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773846036172,
-    "text": "reading",
-    "completed": false,
-    "priority": "Medium",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773846036688,
-    "text": "reading",
-    "completed": false,
-    "priority": "Medium",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
-  },
-  {
-    "id": 1773846055532,
-    "text": "writing",
-    "completed": false,
-    "priority": "Medium",
-    "tag": "Life",
-    "notes": "",
-    "completedAt": null
   }
 ]

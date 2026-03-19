@@ -9,12 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const streakCounter = document.getElementById('streak-counter');
     
-    // Goals Elements
     const goalForm = document.getElementById('goal-form');
     const goalInput = document.getElementById('goal-input');
     const goalList = document.getElementById('goal-list');
 
-    // Timer Elements
     const settingsBtn = document.getElementById('timer-settings-btn');
     const settingsPanel = document.getElementById('timer-settings-panel');
     const startBtn = document.getElementById('start-btn');
@@ -24,17 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGoals = [];
     let isKanbanMode = false;
     
-    let timerInterval;
     let timeRemaining = 25 * 60; 
     let isTimerRunning = false;
     let isBreakMode = false;
 
-    // Initialize Theme
-    if (localStorage.getItem('theme') === 'light') {
-        document.body.classList.add('light-theme');
-    }
+    // --- HACK TO KEEP TIMER RUNNING IN BACKGROUND TABS ---
+    // We create an invisible "Web Worker" that the browser won't pause.
+    const workerCode = `
+        let interval;
+        self.onmessage = function(e) {
+            if (e.data === 'start') interval = setInterval(() => self.postMessage('tick'), 1000);
+            if (e.data === 'stop') clearInterval(interval);
+        };
+    `;
+    const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+    const timerWorker = new Worker(URL.createObjectURL(workerBlob));
 
-    // Request Notification Permission on load
+    if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-theme');
+
     if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
     }
@@ -42,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchTodos();
     fetchGoals();
 
-    // Setup Listeners
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
         localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
@@ -52,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const text = todoInput.value.trim();
         if (!text) return;
-
         await fetch('/api/todos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -66,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const text = goalInput.value.trim();
         if (!text) return;
-
         await fetch('/api/goals', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -85,9 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.altKey && e.key.toLowerCase() === 'k') { e.preventDefault(); toggleViewMode(); }
     });
 
-    settingsBtn.addEventListener('click', () => {
-        settingsPanel.classList.toggle('hidden');
-    });
+    settingsBtn.addEventListener('click', () => settingsPanel.classList.toggle('hidden'));
 
     document.getElementById('work-min').addEventListener('input', (e) => {
         if(!isTimerRunning && !isBreakMode) {
@@ -135,9 +135,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGoals();
     }
 
+    // --- UPGRADED NOTIFICATION LOGIC ---
     function sendNotification(title, body) {
         if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(title, { body });
+            const n = new Notification(title, { 
+                body: body,
+                requireInteraction: true // Makes notification stay on screen until clicked
+            });
+            n.onclick = () => {
+                window.focus(); // Switches the browser to this tab when clicked
+                n.close();
+            };
         }
     }
 
@@ -156,14 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
         oscillator.stop(audioCtx.currentTime + 0.3);
     }
 
+    // --- LOUDER, LONGER ALARM SOUND ---
     function playAlertSound() {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        oscillator.connect(audioCtx.destination);
-        oscillator.type = 'square';
-        oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 0.5);
+        // Plays 3 loud beeps
+        for(let i = 0; i < 3; i++) {
+            const oscillator = audioCtx.createOscillator();
+            oscillator.connect(audioCtx.destination);
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime + (i * 0.8));
+            oscillator.start(audioCtx.currentTime + (i * 0.8));
+            oscillator.stop(audioCtx.currentTime + (i * 0.8) + 0.4);
+        }
     }
 
     function renderGoals() {
@@ -220,17 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.querySelectorAll('.drop-zone').forEach(zone => {
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            zone.classList.add('drag-over');
-        });
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
         zone.addEventListener('drop', async (e) => {
             e.preventDefault();
             zone.classList.remove('drag-over');
             const taskId = e.dataTransfer.getData('text/plain');
             const newPriority = zone.dataset.priority;
-            
             const taskIndex = currentTodos.findIndex(t => t.id == taskId);
             if (taskIndex !== -1 && currentTodos[taskIndex].priority !== newPriority) {
                 currentTodos[taskIndex].priority = newPriority;
@@ -256,12 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="delete-btn" onclick="deleteTodo(${todo.id})">X</button>
                 </div>
             </div>
-            <div style="margin-top: 5px;">
-                <span class="tag-badge">${todo.tag || 'Task'}</span>
-            </div>
+            <div style="margin-top: 5px;"><span class="tag-badge">${todo.tag || 'Task'}</span></div>
             <div class="task-drawer" id="drawer-${todo.id}">
-                <textarea class="note-input" placeholder="Notes auto-save..." 
-                    onkeyup="autoSaveNote(${todo.id}, this)">${todo.notes || ''}</textarea>
+                <textarea class="note-input" placeholder="Notes auto-save..." onkeyup="autoSaveNote(${todo.id}, this)">${todo.notes || ''}</textarea>
             </div>
         `;
     }
@@ -274,29 +279,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function calculateStreak() {
-        const completedDates = currentTodos
-            .filter(t => t.completedAt)
-            .map(t => t.completedAt.split('T')[0]);
-        
+        const completedDates = currentTodos.filter(t => t.completedAt).map(t => t.completedAt.split('T')[0]);
         const uniqueDates = [...new Set(completedDates)].sort((a,b) => new Date(b) - new Date(a));
         let streak = 0;
         let today = new Date();
         today.setHours(0,0,0,0);
-
         for (let i = 0; i < uniqueDates.length; i++) {
             let d = new Date(uniqueDates[i]);
             d.setHours(0,0,0,0);
             const diffDays = Math.round(Math.abs(today - d) / (1000 * 60 * 60 * 24));
-
-            if (diffDays === 0) { 
-                if (streak === 0) streak = 1;
-            } else if (diffDays === 1) { 
-                if (streak === 0) streak = 1; 
-                else streak++; 
-                today = d; 
-            } else {
-                break; 
-            }
+            if (diffDays === 0) { if (streak === 0) streak = 1; } 
+            else if (diffDays === 1) { if (streak === 0) streak = 1; else streak++; today = d; } 
+            else { break; }
         }
         return streak;
     }
@@ -304,22 +298,53 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateStreak() {
         const todayStr = new Date().toISOString().split('T')[0];
         const crushedToday = currentTodos.filter(t => t.completedAt && t.completedAt.split('T')[0] === todayStr).length;
-        const streakDays = calculateStreak();
-        streakCounter.innerText = `🔥 Daily Streak: ${streakDays} | Tasks Crushed Today: ${crushedToday}`;
+        streakCounter.innerText = `🔥 Daily Streak: ${calculateStreak()} | Tasks Crushed Today: ${crushedToday}`;
     }
 
-    window.startTimer = () => {
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
-        }
+    // --- WORKER TICK LOGIC ---
+    timerWorker.onmessage = function(e) {
+        if (e.data === 'tick') {
+            timeRemaining--;
+            const timerDisplay = document.getElementById('pomodoro-timer');
+            const statusDisplay = document.getElementById('timer-status');
+            const workMin = parseInt(document.getElementById('work-min').value) || 25;
+            const breakMin = parseInt(document.getElementById('break-min').value) || 5;
 
-        const timerDisplay = document.getElementById('pomodoro-timer');
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            timerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+            if (timeRemaining <= 0) {
+                timerWorker.postMessage('stop'); // Stop the background worker
+                isTimerRunning = false;
+                startBtn.innerHTML = '▶ Play';
+                widget.classList.remove('timer-running', 'timer-break');
+                playAlertSound();
+                
+                if (!isBreakMode) {
+                    sendNotification("Session Complete 🧠", "Great job! Time for a short break.");
+                    isBreakMode = true;
+                    timeRemaining = breakMin * 60;
+                    timerDisplay.innerText = `${breakMin}:00`;
+                    statusDisplay.innerText = "Ready for Break";
+                } else {
+                    sendNotification("Break Over ☕", "Time to get back to execution!");
+                    isBreakMode = false;
+                    timeRemaining = workMin * 60;
+                    timerDisplay.innerText = `${workMin}:00`;
+                    statusDisplay.innerText = "Ready to Focus";
+                }
+            }
+        }
+    };
+
+    window.startTimer = () => {
+        if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+
         const statusDisplay = document.getElementById('timer-status');
-        const workMin = parseInt(document.getElementById('work-min').value) || 25;
-        const breakMin = parseInt(document.getElementById('break-min').value) || 5;
 
         if (isTimerRunning) { 
-            clearInterval(timerInterval); 
+            timerWorker.postMessage('stop'); 
             isTimerRunning = false; 
             startBtn.innerHTML = '▶ Resume';
             startBtn.style.background = '#ffb142'; 
@@ -340,38 +365,12 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDisplay.innerText = "Deep Work 🧠";
         }
 
-        timerInterval = setInterval(() => {
-            timeRemaining--;
-            let m = Math.floor(timeRemaining / 60);
-            let s = timeRemaining % 60;
-            timerDisplay.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                isTimerRunning = false;
-                startBtn.innerHTML = '▶ Play';
-                widget.classList.remove('timer-running', 'timer-break');
-                playAlertSound();
-                
-                if (!isBreakMode) {
-                    sendNotification("Session Complete", "Great job! Time for a short break.");
-                    isBreakMode = true;
-                    timeRemaining = breakMin * 60;
-                    timerDisplay.innerText = `${breakMin}:00`;
-                    statusDisplay.innerText = "Ready for Break";
-                } else {
-                    sendNotification("Break Over", "Time to get back to execution!");
-                    isBreakMode = false;
-                    timeRemaining = workMin * 60;
-                    timerDisplay.innerText = `${workMin}:00`;
-                    statusDisplay.innerText = "Ready to Focus";
-                }
-            }
-        }, 1000);
+        // Trigger the web worker to start ticking
+        timerWorker.postMessage('start');
     };
 
     window.resetTimer = () => {
-        clearInterval(timerInterval);
+        timerWorker.postMessage('stop');
         isTimerRunning = false;
         isBreakMode = false;
         const workMin = parseInt(document.getElementById('work-min').value) || 25;
@@ -385,16 +384,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.toggleDrawer = (id) => document.getElementById(`drawer-${id}`).classList.toggle('open');
-    
     let typingTimer;
     window.autoSaveNote = (id, element) => {
         clearTimeout(typingTimer);
         typingTimer = setTimeout(async () => {
-            await fetch(`/api/todos/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notes: element.value })
-            });
+            await fetch(`/api/todos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ notes: element.value }) });
             element.classList.add('saved-flash');
             setTimeout(() => element.classList.remove('saved-flash'), 1000);
             const index = currentTodos.findIndex(t => t.id === id);
@@ -404,11 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.toggleStatus = async (id, newStatus) => {
         if (newStatus === true) playSuccessSound();
-        await fetch(`/api/todos/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: newStatus })
-        });
+        await fetch(`/api/todos/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ completed: newStatus }) });
         fetchTodos(); 
     };
 
@@ -417,14 +407,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchTodos();
     };
 
-    // Goals Functions
     window.toggleGoal = async (id, newStatus) => {
         if (newStatus === true) playSuccessSound();
-        await fetch(`/api/goals/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ completed: newStatus })
-        });
+        await fetch(`/api/goals/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ completed: newStatus }) });
         fetchGoals();
     };
 
