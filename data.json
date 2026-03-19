@@ -2,33 +2,109 @@
   {
     "id": 1710788123001,
     "text": "Master Machine Learning modules for exams",
-    "completed": false,
+    "completed": true,
     "priority": "Medium",
     "tag": "Exam Prep",
-    "notes": "Target: 97%. Focus on neural network architectures today."
+    "notes": "Target: 97%. Focus on neural network architectures today.",
+    "completedAt": "2026-03-18T14:07:05.214Z"
   },
   {
     "id": 1710788123002,
     "text": "Optimize Cloudflare Workers API",
-    "completed": false,
+    "completed": true,
     "priority": "High",
     "tag": "Startup",
-    "notes": "Ensure local radius search for real-time inventory discovery is under 200ms."
+    "notes": "Ensure local radius search for real-time inventory discovery is under 200ms.",
+    "completedAt": "2026-03-18T14:06:57.977Z"
   },
   {
     "id": 1710788123003,
     "text": "Strength training & Nutrition planning",
-    "completed": false,
-    "priority": "Medium",
+    "completed": true,
+    "priority": "Low",
     "tag": "Fitness",
-    "notes": "Current goal: hit 52kgs. Meal prep for the week."
+    "notes": "Current goal: hit 52kgs. Meal prep for the week.",
+    "completedAt": "2026-03-18T14:07:10.175Z"
   },
   {
     "id": 1710788123004,
     "text": "car driving practice route",
-    "completed": false,
+    "completed": true,
     "priority": "High",
     "tag": "Life",
-    "notes": "Route: College to House."
+    "notes": "Route: College to House.",
+    "completedAt": "2026-03-18T14:07:01.869Z"
+  },
+  {
+    "id": 1773845843825,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773845843828,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773845845296,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773845868017,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773846036087,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773846036172,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773846036688,
+    "text": "reading",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
+  },
+  {
+    "id": 1773846055532,
+    "text": "writing",
+    "completed": false,
+    "priority": "Medium",
+    "tag": "Life",
+    "notes": "",
+    "completedAt": null
   }
 ]
