@@ -10,14 +10,37 @@
     <div class="container" id="main-container">
         <header>
             <div class="header-top">
-                <h1>Execution Dashboard</h1>
-                <div id="pomodoro-timer" onclick="startTimer()" title="Click to start 25m Deep Work">25:00</div>
+                <div class="header-titles">
+                    <h1>Execution Dashboard</h1>
+                    <p>Discipline over motivation.</p>
+                </div>
+                
+                <div class="pomodoro-widget" id="pomodoro-widget">
+                    <div class="pomodoro-header">
+                        <span id="timer-status" class="timer-status">Ready to Focus</span>
+                        <button id="timer-settings-btn" class="icon-btn" title="Timer Settings">⚙️</button>
+                    </div>
+                    
+                    <div class="timer-display-group">
+                        <div id="pomodoro-timer">25:00</div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button id="start-btn" class="timer-btn play" onclick="startTimer()">▶ Play</button>
+                        <button id="reset-btn" class="timer-btn reset" onclick="resetTimer()">⏹ Reset</button>
+                    </div>
+
+                    <div class="timer-settings-panel hidden" id="timer-settings-panel">
+                        <label>Focus: <input type="number" id="work-min" value="25" min="1"></label>
+                        <label>Break: <input type="number" id="break-min" value="5" min="1"></label>
+                    </div>
+                </div>
             </div>
-            <p>Discipline over motivation.</p>
+            
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
             
             <div class="stats-row">
-                <span id="streak-counter">🔥 Tasks Crushed Today: 0</span>
+                <span id="streak-counter">🔥 Daily Streak: 0 | Tasks Crushed Today: 0</span>
             </div>
         </header>
 
@@ -25,9 +48,20 @@
             <div class="left-controls">
                 <button id="view-toggle" class="outline-btn">📊 Kanban View</button>
                 <a href="/api/export" id="export-btn" class="outline-btn">💾 Backup Data</a>
+                <button id="theme-toggle" class="outline-btn">🌓 Toggle Theme</button>
             </div>
             <button id="focus-toggle" class="outline-btn">👁️ Enter Focus Mode</button>
         </div>
+
+        <div class="monthly-goals" id="monthly-goals-section">
+            <h3>📅 Monthly Goals</h3>
+            <form id="goal-form">
+                <input type="text" id="goal-input" placeholder="Set a high-level goal for this month..." required autocomplete="off">
+                <button type="submit">Add Goal</button>
+            </form>
+            <ul id="goal-list"></ul>
+        </div>
+        <hr class="section-divider">
 
         <form id="todo-form">
             <input type="text" id="todo-input" placeholder="What needs to be dominated today?" required autocomplete="off">

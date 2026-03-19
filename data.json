@@ -39,7 +39,7 @@
     "id": 1773845843825,
     "text": "reading",
     "completed": false,
-    "priority": "Medium",
+    "priority": "Low",
     "tag": "Life",
     "notes": "",
     "completedAt": null
@@ -48,7 +48,7 @@
     "id": 1773845843828,
     "text": "reading",
     "completed": false,
-    "priority": "Medium",
+    "priority": "Low",
     "tag": "Life",
     "notes": "",
     "completedAt": null
@@ -57,7 +57,7 @@
     "id": 1773845845296,
     "text": "reading",
     "completed": false,
-    "priority": "Medium",
+    "priority": "High",
     "tag": "Life",
     "notes": "",
     "completedAt": null
